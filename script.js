@@ -1,11 +1,15 @@
 // script.js
 
 document.addEventListener('DOMContentLoaded', () => {
+    const { jsPDF } = window.jspdf;
+
     const taskInput = document.getElementById('taskInput');
     const timeInput = document.getElementById('timeInput');
     const addTaskBtn = document.getElementById('addTaskBtn');
     const taskList = document.getElementById('taskList');
     const currentDate = document.getElementById('currentDate');
+    const printBtn = document.getElementById('printBtn');
+    const savePdfBtn = document.getElementById('savePdfBtn');
 
     // Display current date
     const date = new Date();
@@ -23,6 +27,12 @@ document.addEventListener('DOMContentLoaded', () => {
             addTask();
         }
     });
+
+    printBtn.addEventListener('click', () => {
+        window.print();
+    });
+
+    savePdfBtn.addEventListener('click', saveAsPDF);
 
     function addTask() {
         const taskText = taskInput.value.trim();
@@ -46,5 +56,21 @@ document.addEventListener('DOMContentLoaded', () => {
             taskInput.value = '';
             timeInput.value = '';
         }
+    }
+
+    function saveAsPDF() {
+        const doc = new jsPDF();
+
+        doc.text('To-Do List', 10, 10);
+        doc.text(currentDate.textContent, 10, 20);
+
+        const items = taskList.getElementsByTagName('li');
+        let y = 30;
+        for (let i = 0; i < items.length; i++) {
+            doc.text(items[i].textContent.replace('Delete', '').trim(), 10, y);
+            y += 10;
+        }
+
+        doc.save('todo-list.pdf');
     }
 });
